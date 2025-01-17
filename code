@@ -1,0 +1,685 @@
+import pandas as pd
+import sqlite3
+# Read in CSV files
+brands = pd.read_csv('/content/brands.csv')
+categories = pd.read_csv('/content/categories.csv')
+customers = pd.read_csv('/content/customers.csv')
+order_items = pd.read_csv('/content/order_items.csv')
+orders = pd.read_csv('/content/orders.csv')
+products = pd.read_csv('/content/products.csv')
+staffs = pd.read_csv('/content/staffs.csv')
+stocks = pd.read_csv('/content/stocks.csv')
+stores = pd.read_csv('/content/stores.csv')
+# Create database connection
+connection = sqlite3.connect('bike_store.db')
+# Insert data into database
+brands.to_sql('brands', connection, if_exists='replace', index=False)
+categories.to_sql('categories', connection, if_exists='replace',
+index=False)
+customers.to_sql('customers', connection, if_exists='replace',
+index=False)
+order_items.to_sql('order_items', connection, if_exists='replace',
+index=False)
+orders.to_sql('orders', connection, if_exists='replace', index=False)
+products.to_sql('products', connection, if_exists='replace',
+index=False)
+staffs.to_sql('staffs', connection, if_exists='replace', index=False)
+stocks.to_sql('stocks', connection, if_exists='replace', index=False)
+stores.to_sql('stores', connection, if_exists='replace', index=False)
+categories.head(10)
+brands.head(10)
+stores.head(5)
+stocks.head(5)
+staffs.head(5)
+import json
+import sqliteschema
+extractor = sqliteschema.SQLiteSchemaExtractor('bike_store.db')
+print(
+"
+--- dump all of the table schemas into a dictionary ---
+\n{}\n".format(
+json.dumps(extractor.fetch_database_schema_as_dict(), indent=4)
+)
+)
+sql_generation_prompt= """
+# SQLite Query Generation System Prompt
+## Core Objectives
+You are an expert SQL query generator specializing in SQLite database
+interactions. Your primary goals are to:
+- Generate precise, efficient, and secure SQLite queries
+- Optimize query performance
+- Ensure data integrity and security
+- Provide clear, readable, and maintainable SQL code
+## Query Generation Guidelines
+### 1. Query Structure and Best Practices
+- Always use prepared statements to prevent SQL injection
+- Prefer parameterized queries over direct string concatenation
+- Use appropriate indexing strategies
+- Minimize the use of wildcard searches (LIKE '%value%')
+- Utilize SQLite's specific optimization techniques
+### 2. Schema and Data Type Considerations
+- Respect the defined schema and data types
+- Use appropriate type casting when necessary
+- Handle NULL values explicitly
+- Consider SQLite's dynamic typing, but maintain type consistency
+### 3. Performance Optimization
+- Use EXPLAIN QUERY PLAN to analyze query performance
+- Avoid SELECT * - always specify exact columns needed
+- Use appropriate JOIN types (INNER, LEFT, etc.)
+- Leverage indexes for large datasets
+- Limit result sets when possible using LIMIT and OFFSET
+### 4. Security Precautions
+- Never trust user input directly
+- Use parameterized queries with ? placeholders
+- Validate and sanitize all input data
+- Implement role-based access control in queries
+- Avoid exposing sensitive database information
+### 5. Common Query Patterns
+- Use EXISTS instead of IN for subqueries
+- Prefer INNER JOIN over multiple WHERE conditions
+- Use window functions for advanced analytics
+- Utilize Common Table Expressions (CTEs) for complex queries
+### 6. Error Handling and Validation
+- Check for potential NULL value issues
+- Handle potential constraint violations
+- Implement appropriate error catching mechanisms
+- Provide meaningful error messages without exposing system details
+## Specific SQLite Considerations
+- Leverage SQLite's UPSERT capabilities
+- Use appropriate TEXT, NUMERIC, INTEGER, REAL types
+- Utilize SQLite's foreign key constraints
+- Consider using WITHOUT ROWID for performance optimization
+- Be aware of SQLite's limitations with concurrent writes
+## Query Generation Process
+1. Analyze the specific data retrieval or manipulation requirement
+2. Review the database schema
+3. Determine the most efficient query strategy
+4. Write the query with clear, readable formatting
+5. Add comments explaining complex logic
+6. Validate the query against security and performance guidelines
+## Example Query Template
+```SELECT
+column1,
+column2
+FROM table_name
+WHERE condition = ?
+AND another_condition IS NOT NULL
+ORDER BY column1
+LIMIT ?;
+```
+## Recommended Tools and Validation
+- Use sqlite3 CLI for query testing
+- Leverage EXPLAIN QUERY PLAN
+- Utilize SQLite's built-in type checking
+- Consider using SQLite extension functions for complex operations
+## Anti-Patterns to Avoid
+- Avoid multiple nested subqueries
+- Do not use heavy, unindexed LIKE searches
+- Prevent cartesian product joins
+- Do not ignore NULL handling
+- Avoid unnecessary table scans
+Do not start with '''sql.
+Do not make up new table and column names. Only use the tables
+available in the schema below.
+Use DISTINCT clause where applicable. Start directly with the query
+SQL Schema:
+{
+"brands": [
+{
+"Field": "brand_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "brand_name",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+}
+],
+"categories": [
+{
+"Field": "category_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "category_name",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+}
+],
+"customers": [
+{
+"Field": "customer_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "first_name",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "last_name",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "phone",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "email",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "street",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "city",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "state",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "zip_code",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+}
+],
+"order_items": [
+{
+},
+{
+},
+{
+},
+{
+},
+{
+},
+{
+"Field": "order_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "item_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "product_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "quantity",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "list_price",
+"Index": false,
+"Type": "REAL",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "discount",
+"Index": false,
+"Type": "REAL",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+}
+],
+"orders": [
+{
+"Field": "order_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "customer_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "order_status",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "order_date",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "required_date",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "shipped_date",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "store_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "staff_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+}
+],
+"products": [
+{
+"Field": "product_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "product_name",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "brand_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "category_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "model_year",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "list_price",
+"Index": false,
+"Type": "REAL",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+}
+],
+"staffs": [
+{
+"Field": "staff_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+},
+{
+},
+{
+},
+{
+},
+{
+},
+{
+},
+{
+"Extra": ""
+"Field": "first_name",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "last_name",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "email",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "phone",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "active",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "store_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "manager_id",
+"Index": false,
+"Type": "REAL",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+}
+],
+"stocks": [
+{
+"Field": "store_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "product_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "quantity",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+}
+],
+"stores": [
+{
+},
+{
+},
+{
+},
+{
+},
+{
+},
+{
+"Field": "store_id",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "store_name",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "phone",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "email",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "street",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+"Field": "city",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "state",
+"Index": false,
+"Type": "TEXT",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+},
+{
+"Field": "zip_code",
+"Index": false,
+"Type": "INTEGER",
+"Nullable": "YES",
+"Key": "",
+"Default": "NULL",
+"Extra": ""
+}
+] } """
+import sqlite3
+import google.generativeai as genai
+import os
+# Function to generate SQL query using Gemini API
+def generate_sql_query(prompt,question):
+try:
+model = genai.GenerativeModel('gemini-1.5-pro-latest')
+prompt_parts = [prompt,question]
+# Use the genai client to generate the query
+response = model.generate_content(
+prompt_parts
+)
+return response.text
+except Exception as e:
+print(f"Error generating SQL query: {e}")
+return None
+# Function to execute the generated SQL query on an SQLite database
+def execute_sql_query(sql_query, db_path):
+try:
+# Connect to the SQLite database
+conn = sqlite3.connect(db_path)
+cursor = conn.cursor()
+# Execute the SQL query
+cursor.execute(sql_query)
+# Fetch the results
+results = cursor.fetchall()
+conn.close()
+return results
+except Exception as e:
+print(f"Error executing SQL query: {e}")
+return None
+def main():
+# Get the Gemini API key from the environment variable
+gemini_api_key = os.environ.get("GEMINI_API_KEY")
+if not gemini_api_key:
+print("GEMINI_API_KEY environment variable is not set.")
+return
+# Configure the genai client with the API key
+genai.configure(api_key=gemini_api_key)
+# Prompt for generating SQL
+question = "Generate an SQL query to list stores where Electra
+bicycles are sold."
+# Path to your SQLite database
+db_path = "/content/bike_store.db" # Replace with your actual
+database path
+# Step 1: Generate SQL query
+sql_query = generate_sql_query(sql_generation_prompt,question)
+if not sql_query:
+print("Failed to generate SQL query.")
+return
+print(f"Generated SQL Query:\n{sql_query}")
+# Step 2: Execute SQL query
+results = execute_sql_query(sql_query, db_path)
+if results is not None:
+print("Query Results:")
+for row in results:
+print(row)
+else:
+print("No results returned.")
+if __name__ == "__main__":
+main()
+# Prompt for generating SQL
+question = "Give me a list of customers who bought Electra cycles
+from store : Santa Cruz Bikes"
+# Path to your SQLite database
+db_path = "/content/bike_store.db" # Replace with your actual
+database path
+# Step 1: Generate SQL query
+sql_query = generate_sql_query(sql_generation_prompt,question)
+if not sql_query:
+print("Failed to generate SQL query.")
+return
+print(f"Generated SQL Query:\n{sql_query}")
